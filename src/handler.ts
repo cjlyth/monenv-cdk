@@ -16,6 +16,7 @@ const handler = async function (event: any, context: any) {
                     widgets: data.Contents!.map(function (e) {
                         return e.Key
                     }),
+                    time: new Date().toISOString(),
                 }
                 return {
                     statusCode: 200,
