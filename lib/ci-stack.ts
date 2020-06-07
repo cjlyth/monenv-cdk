@@ -55,6 +55,7 @@ export class CIStack extends Stack {
             "lambda:CreateFunction",
             "lambda:DeleteFunction",
             "lambda:GetFunctionConfiguration",
+            "lambda:UpdateFunctionConfiguration",
             "lambda:AddPermission",
             "lambda:RemovePermission"
         )
