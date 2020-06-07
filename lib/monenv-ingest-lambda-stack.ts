@@ -4,19 +4,21 @@ import { Function, Runtime, AssetCode, Code } from "@aws-cdk/aws-lambda"
 import { Construct, Duration, Stack, StackProps } from "@aws-cdk/core"
 import s3 = require("@aws-cdk/aws-s3")
 
-interface LambdaApiStackProps extends StackProps {
+interface MonenvIngestLambdaStackProps extends StackProps {
     functionName: string
 }
 
-export class CDKExampleLambdaApiStack extends Stack {
+export class MonenvIngestLambdaStack extends Stack {
     private restApi: RestApi
     private lambdaFunction: Function
     private bucket: s3.Bucket
+    private dataLogBucket: s3.Bucket
 
-    constructor(scope: Construct, id: string, props: LambdaApiStackProps) {
+    constructor(scope: Construct, id: string, props: MonenvIngestLambdaStackProps) {
         super(scope, id, props)
 
         this.bucket = new s3.Bucket(this, "WidgetStore")
+        this.dataLogBucket = new s3.Bucket(this, "dataLogBucket")
 
         this.restApi = new RestApi(this, this.stackName + "RestApi", {
             deployOptions: {
@@ -30,6 +32,7 @@ export class CDKExampleLambdaApiStack extends Stack {
         const lambdaPolicy = new PolicyStatement()
         lambdaPolicy.addActions("s3:ListBucket")
         lambdaPolicy.addResources(this.bucket.bucketArn)
+        lambdaPolicy.addResources(this.dataLogBucket.bucketArn)
 
         this.lambdaFunction = new Function(this, props.functionName, {
             functionName: props.functionName,
@@ -40,6 +43,7 @@ export class CDKExampleLambdaApiStack extends Stack {
             timeout: Duration.seconds(10),
             environment: {
                 BUCKET: this.bucket.bucketName,
+                DATA_LOG_BUCKET: this.dataLogBucket.bucketName,
             },
             initialPolicy: [lambdaPolicy],
         })

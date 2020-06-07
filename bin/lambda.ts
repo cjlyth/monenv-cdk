@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 import "source-map-support/register"
 import cdk = require("@aws-cdk/core")
-import { CDKExampleLambdaApiStack } from "../lib/lambda-api-stack"
+import { MonenvIngestLambdaStack } from "../lib/monenv-ingest-lambda-stack"
 
 export const lambdaApiStackName = "CDKExampleLambdaApiStack"
 export const lambdaFunctionName = "CDKExampleWidgetStoreFunction"
 
 const app = new cdk.App()
-new CDKExampleLambdaApiStack(app, lambdaApiStackName, {
+new MonenvIngestLambdaStack(app, lambdaApiStackName, {
     functionName: lambdaFunctionName,
 })

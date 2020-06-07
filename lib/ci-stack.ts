@@ -14,7 +14,7 @@ export class CIStack extends Stack {
     constructor(scope: Construct, name: string, props: CIStackProps) {
         super(scope, name, props)
 
-        const pipeline = new Pipeline(this, "Pipeline", {})
+        const pipeline = new Pipeline(this, "MonenvPipeline", {})
 
         const repo = Repository.fromRepositoryName(this, "monenv-cdk", props.repositoryName)
         const sourceOutput = new Artifact("SourceOutput")
@@ -32,7 +32,7 @@ export class CIStack extends Stack {
     }
 
     private createBuildStage(pipeline: Pipeline, sourceOutput: Artifact) {
-        const project = new PipelineProject(this, `BuildProject`, {
+        const project = new PipelineProject(this, `MonenvBuildProject`, {
             environment: {
                 buildImage: LinuxBuildImage.STANDARD_3_0,
             },

@@ -4,6 +4,6 @@ import cdk = require("@aws-cdk/core")
 import { CIStack } from "../lib/ci-stack"
 
 const app = new cdk.App()
-new CIStack(app, "CDKExampleLambdaApiCIStack", {
+new CIStack(app, "MonenvCIStack", {
     repositoryName: "monenv-cdk",
 })
