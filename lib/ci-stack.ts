@@ -63,7 +63,7 @@ export class CIStack extends Stack {
             this.formatArn({
                 service: "cloudformation",
                 resource: "stack",
-                resourceName: "CDKToolkit/*",
+                resourceName: "monenv/*",
             }),
             this.formatArn({
                 service: "cloudformation",
@@ -76,7 +76,7 @@ export class CIStack extends Stack {
                 sep: ":",
                 resourceName: lambdaFunctionName,
             }),
-            "arn:aws:s3:::cdktoolkit-stagingbucket-*"
+            "arn:aws:s3:::monenv-stagingbucket-*"
         )
         const editOrCreateLambdaDependencies = new PolicyStatement()
         editOrCreateLambdaDependencies.addActions(

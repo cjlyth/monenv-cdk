@@ -11,14 +11,14 @@ interface MonenvIngestLambdaStackProps extends StackProps {
 export class MonenvIngestLambdaStack extends Stack {
     private restApi: RestApi
     private lambdaFunction: Function
-    private bucket: s3.Bucket
+    private csvBucket: s3.Bucket
     private dataLogBucket: s3.Bucket
 
     constructor(scope: Construct, id: string, props: MonenvIngestLambdaStackProps) {
         super(scope, id, props)
 
-        this.bucket = new s3.Bucket(this, "WidgetStore")
         this.dataLogBucket = new s3.Bucket(this, "dataLogBucket")
+        this.csvBucket = new s3.Bucket(this, "csvBucket")
 
         this.restApi = new RestApi(this, this.stackName + "RestApi", {
             deployOptions: {
@@ -31,7 +31,7 @@ export class MonenvIngestLambdaStack extends Stack {
 
         const lambdaPolicy = new PolicyStatement()
         lambdaPolicy.addActions("s3:ListBucket")
-        lambdaPolicy.addResources(this.bucket.bucketArn)
+        lambdaPolicy.addResources(this.csvBucket.bucketArn)
         lambdaPolicy.addResources(this.dataLogBucket.bucketArn)
 
         this.lambdaFunction = new Function(this, props.functionName, {
@@ -42,7 +42,7 @@ export class MonenvIngestLambdaStack extends Stack {
             memorySize: 512,
             timeout: Duration.seconds(10),
             environment: {
-                BUCKET: this.bucket.bucketName,
+                BUCKET: this.csvBucket.bucketName,
                 DATA_LOG_BUCKET: this.dataLogBucket.bucketName,
             },
             initialPolicy: [lambdaPolicy],
