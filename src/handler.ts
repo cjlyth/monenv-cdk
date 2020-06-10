@@ -1,11 +1,26 @@
 import { S3 } from "aws-sdk"
-var readline = require('readline');
+const readline = require('readline');
+const stream = require('stream')
+
 const bucketName = process.env.BUCKET!
 const dataLogBucketName = process.env.DATA_LOG_BUCKET!
 const headerLineStart = "rtcDate";
 
+
+
 const handler = async function (event: any, context: any, callback: Function) {
     const S3Client = new S3()
+    const createWriteStream = (Bucket: string, Key: string) => {
+        const writeStream = new stream.PassThrough()
+        const uploadPromise = S3Client
+            .upload({
+                Bucket,
+                Key,
+                Body: writeStream
+            })
+            .promise()
+        return { writeStream, uploadPromise }
+    }
     try {
         console.log("LogS3DataEvents")
         
@@ -25,7 +40,9 @@ const handler = async function (event: any, context: any, callback: Function) {
                                     
                 const s3ReadStream = S3Client.getObject(params).createReadStream();
                 var readlineStream = readline.createInterface({input: s3ReadStream, terminal: false});
-                
+
+                const { writeStream, uploadPromise } = createWriteStream(bucketName, srcKey)
+
                 await new Promise((resolve, reject) => {
                     let totalLines = 0;
                     let hasHeader = false;
@@ -35,6 +52,7 @@ const handler = async function (event: any, context: any, callback: Function) {
                         }
                         if (hasHeader) {
                             // TODO: write line to other stream
+                            writeStream.write(`${line}\n`)
                             console.log(`line: ${line}`);
                         }
                         totalLines++;
@@ -43,12 +61,13 @@ const handler = async function (event: any, context: any, callback: Function) {
                         reject(`Error reading the lines from ${srcKey}`);
                     });
                     readlineStream.on('close', function () {
-                        // TODO: write file, close write stream?
+                        writeStream.end()
                         //In this example I'll just print to the log the total number of lines:        
                         console.log(`${srcKey} has ${totalLines} lines`);
                         resolve();
                     });
                 });
+                await uploadPromise;
             } catch (error) {
                 console.log(error);
                 return;
