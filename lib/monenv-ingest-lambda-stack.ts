@@ -43,7 +43,7 @@ export class MonenvIngestLambdaStack extends Stack {
         })
         this.dataLogBucket.addObjectCreatedNotification(
             new s3n.LambdaDestination(this.lambdaFunction),
-            { prefix: "dataLog*" }
+            { prefix: "dataLog" }
         )
     }
 }
