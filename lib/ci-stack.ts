@@ -1,9 +1,8 @@
-import { CodeCommitSourceAction, CodeBuildAction } from "@aws-cdk/aws-codepipeline-actions"
+import { GitHubSourceAction, CodeBuildAction } from "@aws-cdk/aws-codepipeline-actions"
 import { PolicyStatement } from "@aws-cdk/aws-iam"
-import { Construct, Stack, StackProps } from "@aws-cdk/core"
+import { Construct, Stack, StackProps, SecretValue } from "@aws-cdk/core"
 import { PipelineProject, LinuxBuildImage } from "@aws-cdk/aws-codebuild"
 import { Artifact, Pipeline } from "@aws-cdk/aws-codepipeline"
-import { Repository } from "@aws-cdk/aws-codecommit"
 import { lambdaApiStackName, lambdaFunctionName } from "../bin/lambda"
 
 interface CIStackProps extends StackProps {
@@ -16,18 +15,18 @@ export class CIStack extends Stack {
 
         const pipeline = new Pipeline(this, "MonenvPipeline", {})
 
-        const repo = Repository.fromRepositoryName(this, "monenv-cdk", props.repositoryName)
         const sourceOutput = new Artifact("SourceOutput")
-        const sourceAction = new CodeCommitSourceAction({
-            actionName: "CodeCommit",
-            repository: repo,
+        const sourceAction = new GitHubSourceAction({
+            actionName: "GitHubAction",
+            repo: "monenv-cdk",
+            owner: "cjlyth",
+            oauthToken: SecretValue.secretsManager("my-github-token"),
             output: sourceOutput,
         })
         pipeline.addStage({
             stageName: "Source",
             actions: [sourceAction],
         })
-
         this.createBuildStage(pipeline, sourceOutput)
     }
 
