@@ -1,7 +1,7 @@
-import { LambdaIntegration, MethodLoggingLevel, RestApi } from "@aws-cdk/aws-apigateway"
 import { PolicyStatement } from "@aws-cdk/aws-iam"
-import { Function, Runtime, AssetCode, Code } from "@aws-cdk/aws-lambda"
+import { Function, Runtime, AssetCode } from "@aws-cdk/aws-lambda"
 import { Construct, Duration, Stack, StackProps } from "@aws-cdk/core"
+import * as s3n from "@aws-cdk/aws-s3-notifications"
 import s3 = require("@aws-cdk/aws-s3")
 
 interface MonenvIngestLambdaStackProps extends StackProps {
@@ -9,7 +9,6 @@ interface MonenvIngestLambdaStackProps extends StackProps {
 }
 
 export class MonenvIngestLambdaStack extends Stack {
-    private restApi: RestApi
     private lambdaFunction: Function
     private csvBucket: s3.Bucket
     private dataLogBucket: s3.Bucket
@@ -20,19 +19,14 @@ export class MonenvIngestLambdaStack extends Stack {
         this.dataLogBucket = new s3.Bucket(this, "dataLogBucket")
         this.csvBucket = new s3.Bucket(this, "csvBucket")
 
-        this.restApi = new RestApi(this, this.stackName + "RestApi", {
-            deployOptions: {
-                stageName: "beta",
-                metricsEnabled: true,
-                loggingLevel: MethodLoggingLevel.INFO,
-                dataTraceEnabled: true,
-            },
-        })
+        const lambdaReadPolicy = new PolicyStatement()
+        lambdaReadPolicy.addActions("s3:ListBucket")
+        lambdaReadPolicy.addResources(this.csvBucket.bucketArn)
+        lambdaReadPolicy.addResources(this.dataLogBucket.bucketArn)
 
-        const lambdaPolicy = new PolicyStatement()
-        lambdaPolicy.addActions("s3:ListBucket")
-        lambdaPolicy.addResources(this.csvBucket.bucketArn)
-        lambdaPolicy.addResources(this.dataLogBucket.bucketArn)
+        const lambdaAllPolicy = new PolicyStatement()
+        lambdaAllPolicy.addActions("s3:*Object")
+        lambdaAllPolicy.addResources(this.csvBucket.bucketArn)
 
         this.lambdaFunction = new Function(this, props.functionName, {
             functionName: props.functionName,
@@ -45,9 +39,11 @@ export class MonenvIngestLambdaStack extends Stack {
                 BUCKET: this.csvBucket.bucketName,
                 DATA_LOG_BUCKET: this.dataLogBucket.bucketName,
             },
-            initialPolicy: [lambdaPolicy],
+            initialPolicy: [lambdaReadPolicy, lambdaAllPolicy],
         })
 
-        this.restApi.root.addMethod("GET", new LambdaIntegration(this.lambdaFunction, {}))
+        this.dataLogBucket.addObjectCreatedNotification(
+            new s3n.LambdaDestination(this.lambdaFunction)
+        )
     }
 }

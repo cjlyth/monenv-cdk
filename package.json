@@ -22,6 +22,8 @@
         "@aws-cdk/aws-codepipeline": "*",
         "@aws-cdk/aws-codepipeline-actions": "*",
         "@aws-cdk/aws-cloudformation": "*",
+        "@aws-cdk/aws-lambda": "*",
+        "@aws-cdk/aws-s3-notifications": "*",
         "@types/jest": "^24.0.18",
         "@types/node": "^13.7.0",
         "jest": "^24.9.0",
