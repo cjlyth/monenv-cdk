@@ -8,6 +8,24 @@ const handler = async function (event: any, context: any, callback: Function) {
     const S3Client = new S3()
     try {
         console.log("LogS3DataEvents")
+        
+        for (let record of event.Records) {
+            const srcBucket = record.s3.bucket.name;
+            // Keys can have + instead of spaces and other non-ascii
+            const srcKey    = decodeURIComponent(record.s3.object.key.replace(/\+/g, " "));
+            try {
+                const params = {
+                    Bucket: srcBucket,
+                    Key: srcKey
+                };
+                var dataLog = await S3Client.getObject(params).promise();
+                console.log('dataLog: ', dataLog);
+            } catch (error) {
+                console.log(error);
+                return;
+            }  
+        }
+
         console.log("Received event:", JSON.stringify(event, null, 2))
         callback(null, "Finished")
         // const data = await S3Client.listObjectsV2({ Bucket: bucketName }).promise()
