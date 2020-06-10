@@ -1,5 +1,5 @@
 import { S3 } from "aws-sdk"
-
+var readline = require('readline');
 const bucketName = process.env.BUCKET!
 const dataLogBucketName = process.env.DATA_LOG_BUCKET!
 
@@ -19,7 +19,35 @@ const handler = async function (event: any, context: any, callback: Function) {
                     Key: srcKey
                 };
                 var dataLog = await S3Client.getObject(params).promise();
-                console.log('dataLog: ', dataLog);
+                if (!dataLog || !dataLog.Body) {
+                    continue;
+                }
+                    
+                
+                const s3ReadStream = S3Client.getObject(params).createReadStream();
+                var readlineStream = readline.createInterface({input: s3ReadStream, terminal: false});
+                
+                let myReadPromise = new Promise((resolve, reject) => {
+                    let lines = 0;
+                    readlineStream.on('line', function (line: string) {
+                        //Do whatever you need with the line
+                        console.log(`line: ${line}`);
+                        lines++;
+                    });
+                    readlineStream.on('error', () => {
+                        console.log('error');
+                    });
+                    readlineStream.on('close', function () {
+                        // TODO: write file?
+                        //In this example I'll just print to the log the total number of lines:        
+                        console.log(`${srcKey} has ${lines} lines`);
+                        resolve();
+                    });
+                });
+            
+                try { await myReadPromise; }
+                
+                // console.log('dataLog: ', dataLog.Body.toString('ascii'));
             } catch (error) {
                 console.log(error);
                 return;
