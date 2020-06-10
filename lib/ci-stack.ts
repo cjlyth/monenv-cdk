@@ -76,17 +76,25 @@ export class CIStack extends Stack {
                 sep: ":",
                 resourceName: lambdaFunctionName,
             }),
+            this.formatArn({
+                service: "lambda",
+                resource: "function",
+                sep: ":",
+                resourceName: `${lambdaApiStackName}-BucketNotificationsHandler-*`,
+            }),
             "arn:aws:s3:::cdktoolkit-stagingbucket-*"
         )
         const editOrCreateLambdaDependencies = new PolicyStatement()
         editOrCreateLambdaDependencies.addActions(
             "iam:GetRole",
+            "iam:ListRolePolicies",
+            "iam:GetRolePolicy",
             "iam:PassRole",
             "iam:CreateRole",
             "iam:AttachRolePolicy",
             "iam:PutRolePolicy",
             "s3:CreateBucket",
-            "s3:PutBucketTagging"
+            "s3:PutBucketTagging",
         )
         editOrCreateLambdaDependencies.addResources("*")
         project.addToRolePolicy(cdkDeployPolicy)
