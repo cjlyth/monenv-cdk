@@ -41,8 +41,8 @@ export class MonenvIngestLambdaStack extends Stack {
             handler: "handler.handler",
             runtime: Runtime.NODEJS_12_X,
             code: new AssetCode(`./src`),
-            memorySize: 512,
-            timeout: Duration.seconds(10),
+            memorySize: 256,
+            timeout: Duration.seconds(5),
             environment: {
                 BUCKET: this.csvBucket.bucketName,
                 DATA_LOG_BUCKET: this.dataLogBucket.bucketName,
