@@ -36,6 +36,7 @@ const handler = async function (event: any, context: any, callback: Function) {
                     });
                     readlineStream.on('error', () => {
                         console.log('error');
+                        reject(`Error reading the lines from ${srcKey}`);
                     });
                     readlineStream.on('close', function () {
                         // TODO: write file?
