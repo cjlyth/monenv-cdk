@@ -28,6 +28,11 @@ export class MonenvIngestLambdaStack extends Stack {
         lambdaReadDataLogObjectsPolicy.addActions("s3:GetObject")
         lambdaReadDataLogObjectsPolicy.addResources(`${this.dataLogBucket.bucketArn}/*`)
 
+        const lambdaWriteCSVLogObjectsPolicy = new PolicyStatement()
+        lambdaReadDataLogObjectsPolicy.addActions("s3:PutObject")
+        lambdaReadDataLogObjectsPolicy.addResources(`${this.csvBucket.bucketArn}/*`)
+
+
         const lambdaAllPolicy = new PolicyStatement()
         lambdaAllPolicy.addActions("s3:*Object")
         lambdaAllPolicy.addResources(this.csvBucket.bucketArn)
@@ -43,7 +48,7 @@ export class MonenvIngestLambdaStack extends Stack {
                 BUCKET: this.csvBucket.bucketName,
                 DATA_LOG_BUCKET: this.dataLogBucket.bucketName,
             },
-            initialPolicy: [lambdaReadPolicy, lambdaAllPolicy, lambdaReadDataLogObjectsPolicy],
+            initialPolicy: [lambdaReadPolicy, lambdaAllPolicy, lambdaReadDataLogObjectsPolicy, lambdaWriteCSVLogObjectsPolicy],
         })
         this.dataLogBucket.addObjectCreatedNotification(
             new s3n.LambdaDestination(this.lambdaFunction),
