@@ -29,9 +29,8 @@ export class MonenvIngestLambdaStack extends Stack {
         lambdaReadDataLogObjectsPolicy.addResources(`${this.dataLogBucket.bucketArn}/*`)
 
         const lambdaWriteCSVLogObjectsPolicy = new PolicyStatement()
-        lambdaReadDataLogObjectsPolicy.addActions("s3:PutObject")
-        lambdaReadDataLogObjectsPolicy.addResources(`${this.csvBucket.bucketArn}/*`)
-
+        lambdaWriteCSVLogObjectsPolicy.addActions("s3:PutObject")
+        lambdaWriteCSVLogObjectsPolicy.addResources(`${this.csvBucket.bucketArn}/*`)
 
         const lambdaAllPolicy = new PolicyStatement()
         lambdaAllPolicy.addActions("s3:*Object")
