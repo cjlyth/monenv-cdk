@@ -41,7 +41,6 @@ export class MonenvIngestLambdaStack extends Stack {
             },
             initialPolicy: [lambdaReadPolicy, lambdaAllPolicy],
         })
-
         this.dataLogBucket.addObjectCreatedNotification(
             new s3n.LambdaDestination(this.lambdaFunction)
         )

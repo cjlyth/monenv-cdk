@@ -57,6 +57,7 @@ export class CIStack extends Stack {
             "lambda:GetFunctionConfiguration",
             "lambda:UpdateFunctionConfiguration",
             "lambda:AddPermission",
+            "lambda:InvokeFunction",
             "lambda:RemovePermission"
         )
         cdkDeployPolicy.addResources(
@@ -74,17 +75,16 @@ export class CIStack extends Stack {
                 service: "lambda",
                 resource: "function",
                 sep: ":",
+                resourceName: `${lambdaApiStackName}-BucketNotificationsHandler-*`,
+            }),
+            this.formatArn({
+                service: "lambda",
+                resource: "function",
+                sep: ":",
                 resourceName: lambdaFunctionName,
             }),
             "arn:aws:s3:::cdktoolkit-stagingbucket-*"
         )
-        // this.formatArn({
-        //     service: "lambda",
-        //     resource: "function",
-        //     sep: ":",
-        //     resourceName: `${lambdaApiStackName}-BucketNotificationsHandler-*`,
-        // }),
-
 
         const editOrCreateLambdaDependencies = new PolicyStatement()
         editOrCreateLambdaDependencies.addActions(
