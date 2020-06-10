@@ -27,7 +27,7 @@ const handler = async function (event: any, context: any, callback: Function) {
                 const s3ReadStream = S3Client.getObject(params).createReadStream();
                 var readlineStream = readline.createInterface({input: s3ReadStream, terminal: false});
                 
-                let myReadPromise = new Promise((resolve, reject) => {
+                await new Promise((resolve, reject) => {
                     let lines = 0;
                     readlineStream.on('line', function (line: string) {
                         //Do whatever you need with the line
@@ -44,8 +44,6 @@ const handler = async function (event: any, context: any, callback: Function) {
                         resolve();
                     });
                 });
-            
-                try { await myReadPromise; }
                 
                 // console.log('dataLog: ', dataLog.Body.toString('ascii'));
             } catch (error) {
