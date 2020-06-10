@@ -2,8 +2,8 @@ import { S3 } from "aws-sdk"
 var readline = require('readline');
 const bucketName = process.env.BUCKET!
 const dataLogBucketName = process.env.DATA_LOG_BUCKET!
+const headerLineStart = "rtcDate";
 
-// From https://docs.aws.amazon.com/cdk/latest/guide/serverless_example.html
 const handler = async function (event: any, context: any, callback: Function) {
     const S3Client = new S3()
     try {
@@ -22,52 +22,39 @@ const handler = async function (event: any, context: any, callback: Function) {
                 if (!dataLog || !dataLog.Body) {
                     continue;
                 }
-                    
-                
+                                    
                 const s3ReadStream = S3Client.getObject(params).createReadStream();
                 var readlineStream = readline.createInterface({input: s3ReadStream, terminal: false});
                 
                 await new Promise((resolve, reject) => {
-                    let lines = 0;
+                    let totalLines = 0;
+                    let hasHeader = false;
                     readlineStream.on('line', function (line: string) {
-                        //Do whatever you need with the line
-                        console.log(`line: ${line}`);
-                        lines++;
+                        if (line.startsWith(headerLineStart)) {
+                            hasHeader = true;
+                        }
+                        if (hasHeader) {
+                            // TODO: write line to other stream
+                            console.log(`line: ${line}`);
+                        }
+                        totalLines++;
                     });
                     readlineStream.on('error', () => {
-                        console.log('error');
                         reject(`Error reading the lines from ${srcKey}`);
                     });
                     readlineStream.on('close', function () {
-                        // TODO: write file?
+                        // TODO: write file, close write stream?
                         //In this example I'll just print to the log the total number of lines:        
-                        console.log(`${srcKey} has ${lines} lines`);
+                        console.log(`${srcKey} has ${totalLines} lines`);
                         resolve();
                     });
                 });
-                
-                // console.log('dataLog: ', dataLog.Body.toString('ascii'));
             } catch (error) {
                 console.log(error);
                 return;
             }  
         }
-
-        console.log("Received event:", JSON.stringify(event, null, 2))
         callback(null, "Finished")
-        // const data = await S3Client.listObjectsV2({ Bucket: bucketName }).promise()
-        // const dataLogObjects = await S3Client.listObjectsV2({
-        //     Bucket: dataLogBucketName,
-        // }).promise()
-        // var body = {
-        //     widgets: data.Contents!.map(function (e) {
-        //         return e.Key
-        //     }),
-        //     dataLogs: dataLogObjects.Contents!.map(function (e) {
-        //         return e.Key
-        //     }),
-        //     time: new Date().toISOString(),
-        // }
     } catch (error) {
         console.log("Error handling event:", JSON.stringify(event, null, 2))
         callback(error)
