@@ -46,6 +46,7 @@ export class CIStack extends Stack {
             "cloudformation:DescribeStackEvents",
             "cloudformation:DeleteChangeSet",
             "cloudformation:DescribeStacks",
+            "cloudformation:DeleteStack",
             "s3:*Object",
             "s3:ListBucket",
             "s3:getBucketLocation",
@@ -84,11 +85,6 @@ export class CIStack extends Stack {
             "iam:CreateRole",
             "iam:AttachRolePolicy",
             "iam:PutRolePolicy",
-            "apigateway:GET",
-            "apigateway:DELETE",
-            "apigateway:PUT",
-            "apigateway:POST",
-            "apigateway:PATCH",
             "s3:CreateBucket",
             "s3:PutBucketTagging"
         )
