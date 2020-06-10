@@ -21,6 +21,7 @@ export class MonenvIngestLambdaStack extends Stack {
 
         const lambdaReadPolicy = new PolicyStatement()
         lambdaReadPolicy.addActions("s3:ListBucket")
+        lambdaReadPolicy.addActions("s3:ReadObject")
         lambdaReadPolicy.addResources(this.csvBucket.bucketArn)
         lambdaReadPolicy.addResources(this.dataLogBucket.bucketArn)
 
