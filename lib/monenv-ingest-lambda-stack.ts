@@ -6,6 +6,7 @@ import s3 = require("@aws-cdk/aws-s3")
 
 interface MonenvIngestLambdaStackProps extends StackProps {
     functionName: string
+    csvBucketName: string
 }
 
 export class MonenvIngestLambdaStack extends Stack {
@@ -17,7 +18,7 @@ export class MonenvIngestLambdaStack extends Stack {
         super(scope, id, props)
 
         this.dataLogBucket = new s3.Bucket(this, "dataLogBucket")
-        this.csvBucket = new s3.Bucket(this, "csvBucket")
+        this.csvBucket = new s3.Bucket(this, props.csvBucketName)
 
         const lambdaReadPolicy = new PolicyStatement()
         lambdaReadPolicy.addActions("s3:ListBucket")
@@ -47,7 +48,12 @@ export class MonenvIngestLambdaStack extends Stack {
                 BUCKET: this.csvBucket.bucketName,
                 DATA_LOG_BUCKET: this.dataLogBucket.bucketName,
             },
-            initialPolicy: [lambdaReadPolicy, lambdaAllPolicy, lambdaReadDataLogObjectsPolicy, lambdaWriteCSVLogObjectsPolicy],
+            initialPolicy: [
+                lambdaReadPolicy,
+                lambdaAllPolicy,
+                lambdaReadDataLogObjectsPolicy,
+                lambdaWriteCSVLogObjectsPolicy,
+            ],
         })
         this.dataLogBucket.addObjectCreatedNotification(
             new s3n.LambdaDestination(this.lambdaFunction),
