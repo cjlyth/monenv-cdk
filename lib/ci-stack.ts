@@ -3,7 +3,7 @@ import { PolicyStatement } from "@aws-cdk/aws-iam"
 import { Construct, Stack, StackProps, SecretValue } from "@aws-cdk/core"
 import { PipelineProject, LinuxBuildImage } from "@aws-cdk/aws-codebuild"
 import { Artifact, Pipeline } from "@aws-cdk/aws-codepipeline"
-import { lambdaApiStackName, lambdaFunctionName } from "../bin/app"
+import { lambdaApiStackName, lambdaFunctionName, sensorLambdaFunctionName } from "../bin/app"
 
 interface CIStackProps extends StackProps {
     repositoryName: string
@@ -82,6 +82,12 @@ export class CIStack extends Stack {
                 resource: "function",
                 sep: ":",
                 resourceName: lambdaFunctionName,
+            }),
+            this.formatArn({
+                service: "lambda",
+                resource: "function",
+                sep: ":",
+                resourceName: sensorLambdaFunctionName,
             }),
             "arn:aws:s3:::cdktoolkit-stagingbucket-*"
         )
