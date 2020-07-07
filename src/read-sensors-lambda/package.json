@@ -9,6 +9,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "greengrass-core-sdk": "1.6.1"
+    "aws-greengrass-core-sdk": "1.6.0"
   }
 }
