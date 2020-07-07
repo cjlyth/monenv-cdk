@@ -7,8 +7,7 @@ const dataLogBucketName = process.env.DATA_LOG_BUCKET!
 const headerLineStart = "rtcDate"
 
 const {
-    StreamManagerClient, ReadMessagesOptions, ExportDefinition,
-    KinesisConfig, MessageStreamDefinition, StrategyOnFull,
+    StreamManagerClient, ReadMessagesOptions, MessageStreamDefinition, StrategyOnFull,
     ResourceNotFoundException,
 } = require('aws-greengrass-core-sdk').StreamManager;
 const STREAM_NAME = 'USB0';
