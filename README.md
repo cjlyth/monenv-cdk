@@ -51,6 +51,21 @@ Upload a log file to the dataLogs bucket and check the csvBucket which should so
 
 #### Read Sensor Lambda
 
+_GOTCHA_
+
+I didn't [follow the instructions](https://github.com/aws/aws-greengrass-core-sdk-js/) on setting up my raspberry pi!
+```
+uname -m
+curl https://nodejs.org/dist/v12.18.2/node-v12.18.2-linux-armv7l.tar.xz -o node-v12.18.2-linux-armv7l.tar.xz
+tar xavf node-v12.18.2-linux-armv7l.tar.xz
+sudo mv node-v12.18.2-linux-armv7l /opt/node-v12
+rm node-v12.18.2-linux-armv7l.tar.xz
+sudo cp /opt/node-v12/bin/node /usr/local/bin/nodejs12.x
+
+
+```
+
+
 This lambda is designed to be deployed to the greengrass group. 
 In my case it's a raspberry pi which has my sensor setup plugged in. 
 In order to use a lambda with greengrass, it has to be published and a static reference has to be used in greengrass.
