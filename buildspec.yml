@@ -7,7 +7,7 @@ phases:
       nodejs: 12
     commands:
       - npm install
-      - cd src/read-sensors-lambda && npm install
+      - pushd src/read-sensors-lambda && npm install; popd
 
   build:
     commands:
