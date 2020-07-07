@@ -5,7 +5,8 @@ import * as s3n from "@aws-cdk/aws-s3-notifications"
 import s3 = require("@aws-cdk/aws-s3")
 
 interface MonenvIngestLambdaStackProps extends StackProps {
-    functionName: string
+    bucketTriggerLambdaName: string
+    sensorLambdaName: string
     csvBucketName: string
 }
 
@@ -37,11 +38,11 @@ export class MonenvIngestLambdaStack extends Stack {
         lambdaAllPolicy.addActions("s3:*Object")
         lambdaAllPolicy.addResources(this.csvBucket.bucketArn)
 
-        this.lambdaFunction = new Function(this, props.functionName, {
-            functionName: props.functionName,
+        this.lambdaFunction = new Function(this, props.bucketTriggerLambdaName, {
+            functionName: props.bucketTriggerLambdaName,
             handler: "handler.handler",
             runtime: Runtime.NODEJS_12_X,
-            code: new AssetCode(`./src`),
+            code: new AssetCode(`./src/ingest-lambda`),
             memorySize: 256,
             timeout: Duration.seconds(5),
             environment: {
@@ -59,5 +60,14 @@ export class MonenvIngestLambdaStack extends Stack {
             new s3n.LambdaDestination(this.lambdaFunction),
             { prefix: "dataLog" }
         )
+
+        this.lambdaFunction = new Function(this, props.sensorLambdaName, {
+            functionName: props.sensorLambdaName,
+            handler: "handler.handler",
+            runtime: Runtime.NODEJS_12_X,
+            code: new AssetCode(`./src/read-sensors-lambda`),
+            memorySize: 256,
+            timeout: Duration.seconds(5),
+        })
     }
 }

@@ -45,5 +45,18 @@ You should now have a running system.
 Upload a log file to the dataLogs bucket and check the csvBucket which should soon have the processed files.
 
 
+## Useful notes
+
+### Cleaning up S3
+
+During development I often destroy the environment during the periods I am not working on this project. 
+This orphans s3 buckets so I use this script to clean up the buckets.
+_This script is destructive_
+
+```bash
+aws s3 ls | cut -f3 -d' ' | grep monenv | xargs -I{} aws s3 rb s3://{} --force 
+
+```
+
 _I occasionally run into issues when editing the stack where resources get orphaned. 
  I need to determine why this is happening and how to prevent it._
