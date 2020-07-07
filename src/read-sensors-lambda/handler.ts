@@ -9,7 +9,7 @@ const headerLineStart = "rtcDate"
 const {
     StreamManagerClient, ReadMessagesOptions, MessageStreamDefinition, StrategyOnFull,
     ResourceNotFoundException,
-} = require('aws-greengrass-core-sdk').StreamManager;
+} = require('greengrass-core-sdk').StreamManager;
 const STREAM_NAME = 'USB0';
 
 
