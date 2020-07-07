@@ -45,6 +45,41 @@ You should now have a running system.
 Upload a log file to the dataLogs bucket and check the csvBucket which should soon have the processed files.
 
 
+## Application Design
+
+### Lambda 
+
+#### Read Sensor Lambda
+
+This lambda is designed to be deployed to the greengrass group. 
+In my case it's a raspberry pi which has my sensor setup plugged in. 
+In order to use a lambda with greengrass, it has to be published and a static reference has to be used in greengrass.
+
+The recommended way to manage this is with a lambda version alias. 
+In my case, the `PRODUCTION` alias will be used.
+The development process is something like this:
+
+1. Change handler code in this project
+2. push changes to github
+3. wait for CI to complete
+4. publish new version of the lambda 
+    ```
+    aws lambda publish-version --function-name MonenvSensorLambdaFunction
+    ```
+5. update the version alias (replace the version in the command below with the output from the command above)
+    ```
+    aws lambda update-alias  --function-name MonenvSensorLambdaFunction \
+      --name PRODUCTION --function-version 1
+    ``` 
+6. redeploy the greengrass group. For this you can list the group info and just reuse the `id` and `version` in the following command.
+    ```
+    aws greengrass create-deployment \
+        --deployment-type NewDeployment \
+        --group-id fb69a061-0ac0-4766-a2c6-3df02ffebc9a \
+        --group-version d24928b0-ac88-4829-8bdb-d39e17bdbf3e
+    ```
+
+
 ## Useful notes
 
 ### Cleaning up S3
