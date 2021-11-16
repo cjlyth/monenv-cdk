@@ -34,7 +34,7 @@
     },
     "dependencies": {
         "@aws-cdk/aws-glue": "^1.45.0",
-        "aws-sdk": "^2.617.0",
+        "aws-sdk": "^2.814.0",
         "source-map-support": "^0.5.9"
     },
     "description": "* `npm run build`   compile typescript to js  * `npm run watch`   watch for changes and compile  * `npm run test`    perform the jest unit tests  * `cdk deploy`      deploy this stack to your default AWS account/region  * `cdk diff`        compare deployed stack with current state  * `cdk synth`       emits the synthesized CloudFormation template",
